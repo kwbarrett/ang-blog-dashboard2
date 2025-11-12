@@ -17,7 +17,8 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
         DashboardComponent,
         CategoriesComponent
     ],
-    bootstrap: [AppComponent], imports: [BrowserModule,
+    bootstrap: [AppComponent],
+    imports: [BrowserModule,
         AppRoutingModule,
         FormsModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }
