@@ -10,6 +10,7 @@ import { Category, ApiResponse } from '../models/category';
 export class CategoriesComponent implements OnInit {
 
   formCategoryID: number = 0;
+  formCategoryName: string | undefined;
   isSaving: boolean = true;
   categoryArray: Category[] = [];
 
@@ -43,6 +44,12 @@ export class CategoriesComponent implements OnInit {
         this.categoryService.showError('Failed to save category!');
       }
     });
+  }
+
+  onEdit( category_name: string | undefined, category_id: number ){
+    console.log( category_id, category_name );
+    this.formCategoryID = category_id;
+    this.formCategoryName = category_name;
   }
 
   private loadCategories(){
