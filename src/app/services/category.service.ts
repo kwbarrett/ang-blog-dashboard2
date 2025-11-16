@@ -1,23 +1,51 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Category } from '../models/category';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Category, ApiResponse } from '../models/category';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment.development';
+import { ToastrService } from 'ngx-toastr';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CategoryService {
-  private apiURL = environment.apiURL;
+  private apiURL = `${environment.apiURL}categories/`;
+  private readonly jsonHeaders = new HttpHeaders({
+    'Content-Type': 'application/json',
+  });
+
   constructor(
     private http: HttpClient,
+    private toastr: ToastrService
   ) { }
 
-  saveCategory( data: Category ): Observable<{ success: number; message: string }> {
-    return this.http.post<{ success: number; message: string }>(`${this.apiURL}categories/insert.php`, data)
+  showSuccess( message: string ): void{
+    this.toastr.success( message, 'Sucess',{
+      timeOut: 3000,
+      progressBar: true,
+      closeButton: true
+    } )
   }
 
-  getCategories(): Observable<{ success: number, data: Category[] }> {
-    return this.http.get<{ success: number; data: Category[] }>(`${this.apiURL}categories/view.php`);
+  showError( message: string ): void {
+    this.toastr.error(message, 'Error', {
+      timeOut: 5000,
+      progressBar: true,
+      closeButton: true,
+    });
+  }
+
+  saveCategory( data: Category ): Observable<ApiResponse<Category>>{
+    const url = `${this.apiURL}insert.php`;
+    return this.http.post<ApiResponse<Category>>( url, data,{
+      headers: this.jsonHeaders,
+    } );
+  }
+
+  getCategories(): Observable<ApiResponse<Category[]>> {
+    const url = `${this.apiURL}view.php`;
+    return this.http.get<ApiResponse<Category[]>>( url, {
+      headers: this.jsonHeaders
+    });
   }
 }
