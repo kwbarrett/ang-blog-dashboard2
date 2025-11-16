@@ -9,6 +9,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { CategoriesComponent } from './categories/categories.component';
 import { FormsModule } from '@angular/forms';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { ToastrModule } from 'ngx-toastr';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 @NgModule({ declarations: [
         AppComponent,
@@ -20,5 +22,8 @@ import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
     bootstrap: [AppComponent],
     imports: [BrowserModule,
         AppRoutingModule,
-        FormsModule], providers: [provideHttpClient(withInterceptorsFromDi())] })
+        FormsModule,
+        ToastrModule.forRoot(),
+        BrowserAnimationsModule],
+    providers: [provideHttpClient(withInterceptorsFromDi())] })
 export class AppModule { }
