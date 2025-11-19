@@ -10,8 +10,10 @@ import { Category, ApiResponse } from '../models/category';
 export class CategoriesComponent implements OnInit {
 
   formCategoryID: number = 0;
+  formCategoryName: string | undefined;
   isSaving: boolean = true;
   categoryArray: Category[] = [];
+  formStatus: string = 'Add';
 
   constructor( private categoryService: CategoryService ) { }
 
@@ -26,23 +28,52 @@ export class CategoriesComponent implements OnInit {
     }
     this.isSaving = true;
     console.log(categoryData);
-    this.categoryService.saveCategory( categoryData ).subscribe({
-      next: response => {
-        if( response.success === 1 ){
-          this.categoryService.showSuccess('Category saved successfully!');
-          formData.reset();
-          this.formCategoryID = 0;
-          this.loadCategories();
-        }else{
+
+    if( this.formStatus == 'Add'){
+      this.categoryService.saveCategory( categoryData ).subscribe({
+        next: response => {
+          if( response.success === 1 ){
+            this.categoryService.showSuccess( response.message );
+            formData.reset();
+            this.formCategoryID = 0;
+            this.loadCategories();
+          }else{
+            this.categoryService.showError( response.message );
+          }
+        },
+        error: err => {
+          this.isSaving = false;
+          console.error('Failed to save category:', err);
           this.categoryService.showError('Failed to save category!');
         }
-      },
-      error: err => {
-        this.isSaving = false;
-        console.error('Failed to save category:', err);
-        this.categoryService.showError('Failed to save category!');
-      }
-    });
+      });
+    }else if( this.formStatus == 'Edit' && this.formCategoryID ){
+      this.categoryService.updateCategory( this.formCategoryID, categoryData ).subscribe({
+        next: resp => {
+          if( resp.success === 1 ){
+            this.categoryService.showSuccess( resp.message );
+            formData.reset();
+            this.loadCategories();
+          }else{
+            this.categoryService.showError( `Error: ${resp.message}` );
+          }
+          this.isSaving = false;
+        },
+        error: err => {
+          this.isSaving = false;
+          console.error('Failed to update category:', err);
+          this.categoryService.showError('Failed to update category!');
+        }
+      });
+      return;
+    }
+  }
+
+  onEdit( category_name: string | undefined, category_id: number ): void{
+    console.log( category_id, category_name );
+    this.formCategoryID = category_id;
+    this.formCategoryName = category_name;
+    this.formStatus = 'Edit';
   }
 
   private loadCategories(){
@@ -50,6 +81,8 @@ export class CategoriesComponent implements OnInit {
       next: (resp: ApiResponse<Category[]>) => {
         this.categoryArray = resp.data ?? [];
         this.isSaving = false;
+        this.formStatus = 'Add';
+        this.formCategoryID = 0
       },
       error: err => {
         console.error('Failed to load categories', err);
