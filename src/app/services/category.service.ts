@@ -48,4 +48,11 @@ export class CategoryService {
       headers: this.jsonHeaders
     });
   }
+
+  updateCategory( id: number, categoryData: Category ): Observable<ApiResponse<Category>>{
+    const url = `${this.apiURL}update.php?id=${id}`;
+    return this.http.put<ApiResponse<Category>>( url, categoryData, {
+      headers: this.jsonHeaders
+    } )
+  }
 }
