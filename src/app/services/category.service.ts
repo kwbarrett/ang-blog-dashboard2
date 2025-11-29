@@ -53,6 +53,13 @@ export class CategoryService {
     const url = `${this.apiURL}update.php?id=${id}`;
     return this.http.put<ApiResponse<Category>>( url, categoryData, {
       headers: this.jsonHeaders
-    } )
+    });
+  }
+
+  deleteCategory( id: number ): Observable<ApiResponse>{
+    const url = `${this.apiURL}delete.php?id=${id}`;
+    return this.http.delete<ApiResponse>( url, {
+      headers: this.jsonHeaders
+    });
   }
 }

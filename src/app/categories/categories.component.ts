@@ -49,13 +49,13 @@ export class CategoriesComponent implements OnInit {
       });
     }else if( this.formStatus == 'Edit' && this.formCategoryID ){
       this.categoryService.updateCategory( this.formCategoryID, categoryData ).subscribe({
-        next: resp => {
-          if( resp.success === 1 ){
-            this.categoryService.showSuccess( resp.message );
+        next: response => {
+          if( response.success === 1 ){
+            this.categoryService.showSuccess( response.message );
             formData.reset();
             this.loadCategories();
           }else{
-            this.categoryService.showError( `Error: ${resp.message}` );
+            this.categoryService.showError( `Error: ${response.message}` );
           }
           this.isSaving = false;
         },
@@ -76,10 +76,30 @@ export class CategoriesComponent implements OnInit {
     this.formStatus = 'Edit';
   }
 
+  onDelete( id: number ){
+    this.formCategoryID = id;
+    this.categoryService.deleteCategory( this.formCategoryID ).subscribe({
+      next: response => {
+        if( response.success === 1 ){
+          this.categoryService.showSuccess( response.message );
+          this.loadCategories();
+        }else{
+          this.categoryService.showError( `Error: ${response.message}` );
+        }
+        this.isSaving = false;
+      },
+      error: err => {
+        this.isSaving = false;
+        console.error('Failed to save category:', err);
+        this.categoryService.showError('Failed to save category!');
+      }
+    })
+  }
+
   private loadCategories(){
     this.categoryService.getCategories().subscribe({
-      next: (resp: ApiResponse<Category[]>) => {
-        this.categoryArray = resp.data ?? [];
+      next: (response: ApiResponse<Category[]>) => {
+        this.categoryArray = response.data ?? [];
         this.isSaving = false;
         this.formStatus = 'Add';
         this.formCategoryID = 0
